@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 
 public class EditItemActivity extends AppCompatActivity {
+   // private static final String TAG = "EditItemActivity";
     String item;
     int position;
     EditText etEditNew;
@@ -27,7 +28,8 @@ public class EditItemActivity extends AppCompatActivity {
     public void onSave(View view) {
         Intent intent = new Intent();
         etEditNew = (EditText) findViewById(R.id.etEdit);
-        intent.putExtra("edittextvalue",etEditNew.getText().toString());
+        Intent edittextvalue = intent.putExtra("edittextvalue", etEditNew.getText().toString());
+        //Log.d(TAG, "onSave:" + etEditNew.getText().toString() );
         intent.putExtra("position",position);
         setResult(RESULT_OK, intent);
         finish();
