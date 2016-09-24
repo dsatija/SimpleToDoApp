@@ -3,4 +3,5 @@
     <string name="AddItem">Enter a new item</string>
     <string name="EditItem">Edit Item Below</string>
     <string name="save">SAVE</string>
+    <string name="checkbox">CheckBox</string>
 </resources>

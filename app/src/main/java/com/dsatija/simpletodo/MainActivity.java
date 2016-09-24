@@ -9,18 +9,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
-
+import android.widget.TextView;
 import com.dsatija.simpletodo.db.TaskContract;
 import com.dsatija.simpletodo.db.TaskDbHelper;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    ArrayList<String> items;
-    ArrayAdapter<String> itemsAdapter;
+    ArrayList<Task> items;
+    ArrayList <String> checkedValue = new ArrayList<>();
+    TaskAdapter adapter;
     ListView lvItems;
     private final int REQUEST_CODE = 10;
     private TaskDbHelper mHelper;
@@ -52,10 +52,20 @@ public class MainActivity extends AppCompatActivity {
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CheckBox cb = (CheckBox) view.findViewById(R.id.checkBox1);
+                TextView tv = (TextView) view.findViewById(R.id.tvtaskName);
+                //cb.performClick();
+                if(cb.isChecked()) {
+                    checkedValue.add(tv.getText().toString());
+                }
+                else if (!cb.isChecked()){
+                    checkedValue.remove(tv.getText().toString());
+                }
                 Intent i = new Intent(getApplicationContext(), EditItemActivity.class);
-                i.putExtra("item",items.get(position));
+                i.putExtra("item",items.get(position).toString());
                 i.putExtra("position",position);
                 startActivityForResult(i, REQUEST_CODE);
+
             }
         });
     }
@@ -65,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onItemLongClick(AdapterView<?> adapter,
                                                    View view, int pos, long id) {
-                        String task = items.get(pos);
+                        String task = items.get(pos).toString();
                         Log.d(TAG, "Task to remove: " + items.get(pos));
                         SQLiteDatabase db = mHelper.getWritableDatabase();
                         db.delete(TaskContract.TaskEntry.TABLE,
@@ -83,36 +93,40 @@ public class MainActivity extends AppCompatActivity {
         String itemText = etNewItem.getText().toString();
         etNewItem.setText("");
         Log.d(TAG, "Task to add: " + itemText);
-        SQLiteDatabase db = mHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(TaskContract.TaskEntry.COL_TASK_TITLE, itemText);
-        db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
-                null,
-                values,
-                SQLiteDatabase.CONFLICT_REPLACE);
-        db.close();
-        updateUI();
+        if (itemText != null && !itemText.isEmpty()) {
+            SQLiteDatabase db = mHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(TaskContract.TaskEntry.COL_TASK_TITLE, itemText);
+            db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
+                    null,
+                    values,
+                    SQLiteDatabase.CONFLICT_REPLACE);
+            db.close();
+            updateUI();
+        }
+
     }
     private void updateUI() {
-        ArrayList<String> taskList = new ArrayList<>();
+        lvItems.setAdapter(adapter);
+        ArrayList<Task> taskList = new ArrayList<Task>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
                 new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE},
                 null, null, null, null, null);
         while (cursor.moveToNext()) {
             int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
-            taskList.add(cursor.getString(idx));
+            Task task = new Task(cursor.getString(idx));
+           // taskList.add(cursor.getString(idx));
+            taskList.add(task);
         }
-
-        if (itemsAdapter == null) {
-            itemsAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,taskList);
-            lvItems.setAdapter(itemsAdapter);
+        if (adapter == null) {
+            adapter = new TaskAdapter(this, taskList);
+            lvItems.setAdapter(adapter);
         } else {
-            itemsAdapter.clear();
-            itemsAdapter.addAll(taskList);
-            itemsAdapter.notifyDataSetChanged();
+            adapter.clear();
+            adapter.addAll(taskList);
+            adapter.notifyDataSetChanged();
         }
-
         cursor.close();
         db.close();
         items = taskList;
@@ -125,15 +139,16 @@ public class MainActivity extends AppCompatActivity {
             int pos=data.getIntExtra("position",0);
             Log.d(TAG, "Editted task: " + editted_task);
             Log.d(TAG,"Replacing:" + items.get(pos));
-            SQLiteDatabase db = mHelper.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put(TaskContract.TaskEntry.COL_TASK_TITLE, editted_task);
-            db.update(TaskContract.TaskEntry.TABLE,values,TaskContract.TaskEntry.COL_TASK_TITLE
-                    + " = ?",new String[]{items.get(pos)});
-
-            db.close();
-            updateUI();
-
+            if (editted_task != null && !editted_task.isEmpty()) {
+                SQLiteDatabase db = mHelper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put(TaskContract.TaskEntry.COL_TASK_TITLE, editted_task);
+                db.update(TaskContract.TaskEntry.TABLE, values, TaskContract.TaskEntry.COL_TASK_TITLE
+                        + " = ?", new String[]{items.get(pos).toString()});
+                db.close();
+                updateUI();
+            }
         }
+
     }
 }
