@@ -17,12 +17,14 @@ The following **required** functionality is completed:
 The following **suggested** functionality is completed:
 
  - Persist the todo items into **SQLite** instead of a text file
+ - Improve style of the todo items in the list using a **custom adapter**:
+    Created List view with custom layout which consist of **Text view and Check    box**.
 
 ## Video Walkthrough 
 
 Here's a walkthrough of implemented user stories:
 
-<img src="http://i.imgur.com/TdlkyBV.gif"  title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src="http://i.imgur.com/YAuV1YL.gif"  title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
