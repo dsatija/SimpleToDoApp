@@ -35,11 +35,17 @@ public class MainActivity extends AppCompatActivity {
         lvItems = (ListView)findViewById(R.id.lvItems);
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE},
+                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE,
+                        TaskContract.TaskEntry.COL_KEY_STATUS},
                 null, null, null, null, null);
         while(cursor.moveToNext()) {
             int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
+
             Log.d(TAG, "Task: " + cursor.getString(idx));
+
+            int idx2 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_KEY_STATUS);
+
+            Log.d(TAG, "Status: " + cursor.getInt(idx2));
         }
         cursor.close();
         db.close();
@@ -108,28 +114,31 @@ public class MainActivity extends AppCompatActivity {
     }
     private void updateUI() {
         lvItems.setAdapter(adapter);
-        ArrayList<Task> taskList = new ArrayList<Task>();
+        ArrayList<Task> taskList = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE},
+                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE,TaskContract.TaskEntry.COL_KEY_STATUS},
                 null, null, null, null, null);
-        while (cursor.moveToNext()) {
-            int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
-            Task task = new Task(cursor.getString(idx));
-           // taskList.add(cursor.getString(idx));
-            taskList.add(task);
+        if(cursor.getCount()>0) {
+            while (cursor.moveToNext()) {
+                int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
+                int idx2 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_KEY_STATUS);
+                Task task = new Task(cursor.getString(idx), cursor.getInt(idx2));
+                // taskList.add(cursor.getString(idx));
+                taskList.add(task);
+            }
+            if (adapter == null) {
+                adapter = new TaskAdapter(this, taskList, new TaskDbHelper(this));
+                lvItems.setAdapter(adapter);
+            } else {
+                adapter.clear();
+                adapter.addAll(taskList);
+                adapter.notifyDataSetChanged();
+            }
+            cursor.close();
+            db.close();
+            items = taskList;
         }
-        if (adapter == null) {
-            adapter = new TaskAdapter(this, taskList);
-            lvItems.setAdapter(adapter);
-        } else {
-            adapter.clear();
-            adapter.addAll(taskList);
-            adapter.notifyDataSetChanged();
-        }
-        cursor.close();
-        db.close();
-        items = taskList;
     }
 
     @Override
