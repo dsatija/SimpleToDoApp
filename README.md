@@ -4,7 +4,7 @@
 
 Submitted by: **Disha**
 
-Time spent: **5 hours** hours spent in total
+Time spent: **15 hours** hours spent in total
 
 ## User Stories
 
