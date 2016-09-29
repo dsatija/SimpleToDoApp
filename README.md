@@ -4,7 +4,7 @@
 
 Submitted by: **Disha**
 
-Time spent: **5 hours** hours spent in total
+Time spent: **15 hours** hours spent in total
 
 ## User Stories
 
@@ -19,6 +19,7 @@ The following **suggested** functionality is completed:
  - Persist the todo items into **SQLite** instead of a text file
  - Improve style of the todo items in the list using a **custom adapter**:
     Created List view with custom layout which consist of **Text view and Check    box**.
+ - Code added for persisting checkbox value in sqlite.
 
 ## Video Walkthrough 
 
