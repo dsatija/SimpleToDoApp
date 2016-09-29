@@ -43,11 +43,8 @@ public class MainActivity extends AppCompatActivity {
                 null, null, null, null, null);
         while(cursor.moveToNext()) {
             int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
-
             Log.d(TAG, "Task: " + cursor.getString(idx));
-
             int idx2 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_STATUS);
-
             Log.d(TAG, "Status: " + cursor.getInt(idx2));
         }
         cursor.close();
@@ -95,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                                 new String[]{task});
                         db.close();
                         updateUI();
+                       // Log.d(TAG, "update ui called");
                         return true;
                     }
                 });
@@ -119,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private void updateUI() {
+        //Log.d(TAG, "Inside updateui ");
         lvItems.setAdapter(adapter);
         ArrayList<Task> taskList = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
@@ -129,7 +128,8 @@ public class MainActivity extends AppCompatActivity {
                         TaskContract.TaskEntry.COL_TASK_MONTH,
                         TaskContract.TaskEntry.COL_TASK_DAY},
                 null, null, null, null, null);
-        if(cursor.getCount()>0) {
+       // Log.d(TAG, String.valueOf(cursor.getCount()));
+        if(cursor.getCount()>= 0) {
             while (cursor.moveToNext()) {
                 int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
                 int idx2 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_STATUS);
@@ -140,13 +140,16 @@ public class MainActivity extends AppCompatActivity {
                         cursor.getInt(idx3),cursor.getInt(idx4),cursor.getInt(idx5));
                 taskList.add(task);
             }
+
             if (adapter == null) {
                 adapter = new TaskAdapter(this, taskList, new TaskDbHelper(this));
+                //Log.d(TAG, "adapter null");
                 lvItems.setAdapter(adapter);
             } else {
                 adapter.clear();
                 adapter.addAll(taskList);
                 adapter.notifyDataSetChanged();
+                //Log.d(TAG, "calling notify");
             }
             cursor.close();
             db.close();
