@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">SimpleToDo</string>
     <string name="AddItem">Enter a new item</string>
-    <string name="EditItem">Edit Item Below</string>
+    <string name="EditItem">Task:</string>
     <string name="save">SAVE</string>
     <string name="checkbox">CheckBox</string>
+    <string name="DueDate">Due Date:</string>
 </resources>

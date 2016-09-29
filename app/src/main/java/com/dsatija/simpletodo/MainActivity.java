@@ -36,14 +36,17 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
                 new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE,
-                        TaskContract.TaskEntry.COL_KEY_STATUS},
+                        TaskContract.TaskEntry.COL_TASK_STATUS,
+                        TaskContract.TaskEntry.COL_TASK_YEAR,
+                        TaskContract.TaskEntry.COL_TASK_MONTH,
+                        TaskContract.TaskEntry.COL_TASK_DAY},
                 null, null, null, null, null);
         while(cursor.moveToNext()) {
             int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
 
             Log.d(TAG, "Task: " + cursor.getString(idx));
 
-            int idx2 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_KEY_STATUS);
+            int idx2 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_STATUS);
 
             Log.d(TAG, "Status: " + cursor.getInt(idx2));
         }
@@ -70,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
                 Intent i = new Intent(getApplicationContext(), EditItemActivity.class);
                 i.putExtra("item",items.get(position).toString());
                 i.putExtra("position",position);
+                i.putExtra("year", items.get(position).year);
+                i.putExtra("month", items.get(position).month);
+                i.putExtra("day", items.get(position).day);
                 startActivityForResult(i, REQUEST_CODE);
 
             }
@@ -117,14 +123,21 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Task> taskList = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE,TaskContract.TaskEntry.COL_KEY_STATUS},
+                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE,
+                        TaskContract.TaskEntry.COL_TASK_STATUS,
+                        TaskContract.TaskEntry.COL_TASK_YEAR,
+                        TaskContract.TaskEntry.COL_TASK_MONTH,
+                        TaskContract.TaskEntry.COL_TASK_DAY},
                 null, null, null, null, null);
         if(cursor.getCount()>0) {
             while (cursor.moveToNext()) {
                 int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
-                int idx2 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_KEY_STATUS);
-                Task task = new Task(cursor.getString(idx), cursor.getInt(idx2));
-                // taskList.add(cursor.getString(idx));
+                int idx2 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_STATUS);
+                int idx3 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_YEAR);
+                int idx4 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_MONTH);
+                int idx5 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_DAY);
+                Task task = new Task(cursor.getString(idx), cursor.getInt(idx2),
+                        cursor.getInt(idx3),cursor.getInt(idx4),cursor.getInt(idx5));
                 taskList.add(task);
             }
             if (adapter == null) {
@@ -144,20 +157,34 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK ) {
+            //int pos = data.getExtras().getInt("pos");
             String editted_task =data.getStringExtra("edittextvalue");
             int pos=data.getIntExtra("position",0);
             Log.d(TAG, "Editted task: " + editted_task);
-            Log.d(TAG,"Replacing:" + items.get(pos));
+            //Log.d(TAG,"Replacing:" + items.get(pos));
+            int year = data.getIntExtra("year", 0);
+            int month = data.getIntExtra("month", 0);
+            int day = data.getIntExtra("day", 0);
+            Task task = items.get(pos);
+            String oldTaskName=items.get(pos).toString();
             if (editted_task != null && !editted_task.isEmpty()) {
+                task.taskName=editted_task;
+                task.year=year;
+                task.month=month;
+                task.day=day;
                 SQLiteDatabase db = mHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put(TaskContract.TaskEntry.COL_TASK_TITLE, editted_task);
-                db.update(TaskContract.TaskEntry.TABLE, values, TaskContract.TaskEntry.COL_TASK_TITLE
-                        + " = ?", new String[]{items.get(pos).toString()});
+                values.put(TaskContract.TaskEntry.COL_TASK_YEAR,year);
+                values.put(TaskContract.TaskEntry.COL_TASK_MONTH,month);
+                values.put(TaskContract.TaskEntry.COL_TASK_DAY,day);
+                //add values
+                int rowsUpdated=db.update(TaskContract.TaskEntry.TABLE, values,
+                        TaskContract.TaskEntry.COL_TASK_TITLE
+                        + " = ?", new String[]{oldTaskName});
                 db.close();
                 updateUI();
             }
         }
-
     }
 }
