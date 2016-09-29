@@ -84,8 +84,17 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onItemLongClick(AdapterView<?> adapter,
                                                    View view, int pos, long id) {
-                        String task = items.get(pos).toString();
-                        Log.d(TAG, "Task to remove: " + items.get(pos));
+                        String task ;
+                        if(items.size() == 1){
+                            task = items.get(items.size() - 1).toString();
+                            Log.d(TAG, "Task to remove: " +
+                                    items.get(items.size() - 1));
+                        }
+                        else{
+                            task = items.get(pos).toString();
+                            Log.d(TAG, "Task to remove: " + items.get(pos));
+                                   ;
+                        }
                         SQLiteDatabase db = mHelper.getWritableDatabase();
                         db.delete(TaskContract.TaskEntry.TABLE,
                                 TaskContract.TaskEntry.COL_TASK_TITLE + " = ?",
@@ -140,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
                         cursor.getInt(idx3),cursor.getInt(idx4),cursor.getInt(idx5));
                 taskList.add(task);
             }
-
             if (adapter == null) {
                 adapter = new TaskAdapter(this, taskList, new TaskDbHelper(this));
                 //Log.d(TAG, "adapter null");
