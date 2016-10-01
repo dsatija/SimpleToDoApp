@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,15 +14,18 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import com.dsatija.simpletodo.db.TaskContract;
 import com.dsatija.simpletodo.db.TaskDbHelper;
+
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EditNameDialogFragment.EditTaskDialogListener {
     ArrayList<Task> items;
     ArrayList <String> checkedValue = new ArrayList<>();
     TaskAdapter adapter;
     ListView lvItems;
+
     private final int REQUEST_CODE = 10;
     private TaskDbHelper mHelper;
     private static final String TAG = "MainActivity";
@@ -54,6 +58,14 @@ public class MainActivity extends AppCompatActivity {
         setupOnClickListener();
     }
 
+    private void showEditDialog(String taskName,int position) {
+        FragmentManager fm = getSupportFragmentManager();
+        EditNameDialogFragment editNameDialogFragment = EditNameDialogFragment.newInstance(taskName,position
+                );
+        editNameDialogFragment.show(fm, "fragment_edit_name");
+    }
+
+
     private void setupOnClickListener(){
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -67,13 +79,17 @@ public class MainActivity extends AppCompatActivity {
                 else if (!cb.isChecked()){
                     checkedValue.remove(tv.getText().toString());
                 }
-                Intent i = new Intent(getApplicationContext(), EditItemActivity.class);
+                showEditDialog(items.get(position).toString(),position);
+
+                //showDialog(view);
+                /*Intent i = new Intent(getApplicationContext(), EditItemActivity.class);
                 i.putExtra("item",items.get(position).toString());
                 i.putExtra("position",position);
                 i.putExtra("year", items.get(position).year);
                 i.putExtra("month", items.get(position).month);
                 i.putExtra("day", items.get(position).day);
                 startActivityForResult(i, REQUEST_CODE);
+                */
 
             }
         });
@@ -197,5 +213,34 @@ public class MainActivity extends AppCompatActivity {
                 updateUI();
             }
         }
+    }
+
+    @Override
+    public void onFinishEditDialog(String inputText, int position, int year, int month, int day) {
+
+        if(inputText!=null) {
+            Log.d(TAG, "Editted task: " + inputText);
+            Task task = items.get(position);
+            String oldTaskName = items.get(position).toString();
+            if (inputText != null && !inputText.isEmpty()) {
+                task.taskName = inputText;
+                task.year = year;
+                task.month = month;
+                task.day = day;
+                SQLiteDatabase db = mHelper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put(TaskContract.TaskEntry.COL_TASK_TITLE, inputText);
+                values.put(TaskContract.TaskEntry.COL_TASK_YEAR, year);
+                values.put(TaskContract.TaskEntry.COL_TASK_MONTH, month);
+                values.put(TaskContract.TaskEntry.COL_TASK_DAY, day);
+                //add values
+                int rowsUpdated = db.update(TaskContract.TaskEntry.TABLE, values,
+                        TaskContract.TaskEntry.COL_TASK_TITLE
+                                + " = ?", new String[]{oldTaskName});
+                db.close();
+                updateUI();
+            }
+        }
+
     }
 }
