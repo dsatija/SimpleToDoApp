@@ -20,12 +20,13 @@ The following **suggested** functionality is completed:
  - Improve style of the todo items in the list using a **custom adapter**:
     Created List view with custom layout which consist of **Text view and Check    box**.
  - Code added for persisting checkbox value in sqlite.
+ - Added support for completion due dates for todo items (and display within listview item).
 
 ## Video Walkthrough 
 
 Here's a walkthrough of implemented user stories:
 
-<img src="http://i.imgur.com/YAuV1YL.gif"  title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src="http://i.imgur.com/4lW19j0.gif"  title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
