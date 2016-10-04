@@ -4,7 +4,7 @@
 
 Submitted by: **Disha**
 
-Time spent: **15 hours** hours spent in total
+Time spent: **20 hours** hours spent in total
 
 ## User Stories
 
@@ -21,12 +21,13 @@ The following **suggested** functionality is completed:
     Created List view with custom layout which consist of **Text view and Check    box**.
  - Code added for persisting checkbox value in sqlite.
  - Added support for completion due dates for todo items (and display within listview item).
+ -Use a DialogFragment instead of new Activity for editing items
 
 ## Video Walkthrough 
 
 Here's a walkthrough of implemented user stories:
 
-<img src="http://i.imgur.com/4lW19j0.gif"  title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src="http://i.imgur.com/Xq83P7h.gif"  title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
