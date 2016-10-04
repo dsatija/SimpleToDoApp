@@ -1,7 +1,6 @@
 package com.dsatija.simpletodo;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements EditNameDialogFra
         lvItems = (ListView)findViewById(R.id.lvItems);
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE,
+                new String[]{TaskContract.TaskEntry.COL_TASK_ID, TaskContract.TaskEntry.COL_TASK_TITLE,
                         TaskContract.TaskEntry.COL_TASK_STATUS,
                         TaskContract.TaskEntry.COL_TASK_YEAR,
                         TaskContract.TaskEntry.COL_TASK_MONTH,
@@ -58,10 +57,11 @@ public class MainActivity extends AppCompatActivity implements EditNameDialogFra
         setupOnClickListener();
     }
 
-    private void showEditDialog(String taskName,int position) {
+    private void showEditDialog(String taskName,int position,int year,int month,int day) {
         FragmentManager fm = getSupportFragmentManager();
-        EditNameDialogFragment editNameDialogFragment = EditNameDialogFragment.newInstance(taskName,position
-                );
+        EditNameDialogFragment editNameDialogFragment = EditNameDialogFragment.newInstance
+                (taskName,
+                position,year,month,day);
         editNameDialogFragment.show(fm, "fragment_edit_name");
     }
 
@@ -79,7 +79,8 @@ public class MainActivity extends AppCompatActivity implements EditNameDialogFra
                 else if (!cb.isChecked()){
                     checkedValue.remove(tv.getText().toString());
                 }
-                showEditDialog(items.get(position).toString(),position);
+                showEditDialog(items.get(position).toString(),position,items.get(position).year,
+                        items.get(position).month,items.get(position).day);
 
                 //showDialog(view);
                 /*Intent i = new Intent(getApplicationContext(), EditItemActivity.class);
@@ -100,24 +101,28 @@ public class MainActivity extends AppCompatActivity implements EditNameDialogFra
                     @Override
                     public boolean onItemLongClick(AdapterView<?> adapter,
                                                    View view, int pos, long id) {
-                        String task ;
+                        //String task ;
                         if(items.size() == 1){
-                            task = items.get(items.size() - 1).toString();
+                            //task = items.get(items.size() - 1).toString();
                             Log.d(TAG, "Task to remove: " +
                                     items.get(items.size() - 1));
                         }
                         else{
-                            task = items.get(pos).toString();
+                            //task = items.get(pos).toString();
                             Log.d(TAG, "Task to remove: " + items.get(pos));
                                    ;
                         }
+                        id=items.get(pos).getId();
+                        Log.d(TAG, "id value"+ String.valueOf(id));
+
                         SQLiteDatabase db = mHelper.getWritableDatabase();
-                        db.delete(TaskContract.TaskEntry.TABLE,
-                                TaskContract.TaskEntry.COL_TASK_TITLE + " = ?",
-                                new String[]{task});
+                        int y = db.delete(TaskContract.TaskEntry.TABLE,
+                                TaskContract.TaskEntry.COL_TASK_ID + " = ?",
+                                new String[]{String.valueOf(items.get(pos).getId())});
+
                         db.close();
                         updateUI();
-                       // Log.d(TAG, "update ui called");
+                       Log.d(TAG, "calling update" +String.valueOf(y));
                         return true;
                     }
                 });
@@ -142,45 +147,52 @@ public class MainActivity extends AppCompatActivity implements EditNameDialogFra
 
     }
     private void updateUI() {
-        //Log.d(TAG, "Inside updateui ");
+        Log.d(TAG, "Inside updateui ");
         lvItems.setAdapter(adapter);
         ArrayList<Task> taskList = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE,
+                new String[]{
+                        TaskContract.TaskEntry.COL_TASK_ID,
+                        TaskContract.TaskEntry.COL_TASK_TITLE,
                         TaskContract.TaskEntry.COL_TASK_STATUS,
                         TaskContract.TaskEntry.COL_TASK_YEAR,
                         TaskContract.TaskEntry.COL_TASK_MONTH,
                         TaskContract.TaskEntry.COL_TASK_DAY},
                 null, null, null, null, null);
-       // Log.d(TAG, String.valueOf(cursor.getCount()));
+       Log.d(TAG, String.valueOf(cursor.getCount()));
         if(cursor.getCount()>= 0) {
             while (cursor.moveToNext()) {
-                int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
+                int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_ID);
+                int idx1 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
                 int idx2 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_STATUS);
                 int idx3 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_YEAR);
                 int idx4 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_MONTH);
                 int idx5 = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_DAY);
-                Task task = new Task(cursor.getString(idx), cursor.getInt(idx2),
+                Task task = new Task(cursor.getString(idx1), cursor.getInt(idx2),
                         cursor.getInt(idx3),cursor.getInt(idx4),cursor.getInt(idx5));
+                task.setId(cursor.getInt(idx));
                 taskList.add(task);
+
             }
             if (adapter == null) {
                 adapter = new TaskAdapter(this, taskList, new TaskDbHelper(this));
-                //Log.d(TAG, "adapter null");
+                Log.d(TAG, "adapter null");
                 lvItems.setAdapter(adapter);
             } else {
                 adapter.clear();
+                Log.d(TAG, String.valueOf(taskList));
                 adapter.addAll(taskList);
                 adapter.notifyDataSetChanged();
-                //Log.d(TAG, "calling notify");
+                Log.d(TAG, "calling notify");
             }
             cursor.close();
             db.close();
+            Log.d(TAG, String.valueOf(taskList));
             items = taskList;
         }
     }
-
+/*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK ) {
@@ -206,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements EditNameDialogFra
                 values.put(TaskContract.TaskEntry.COL_TASK_MONTH,month);
                 values.put(TaskContract.TaskEntry.COL_TASK_DAY,day);
                 //add values
-                int rowsUpdated=db.update(TaskContract.TaskEntry.TABLE, values,
+                db.update(TaskContract.TaskEntry.TABLE, values,
                         TaskContract.TaskEntry.COL_TASK_TITLE
                         + " = ?", new String[]{oldTaskName});
                 db.close();
@@ -214,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements EditNameDialogFra
             }
         }
     }
+    */
 
     @Override
     public void onFinishEditDialog(String inputText, int position, int year, int month, int day) {
@@ -229,14 +242,16 @@ public class MainActivity extends AppCompatActivity implements EditNameDialogFra
                 task.day = day;
                 SQLiteDatabase db = mHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
+               // values.put(TaskContract.TaskEntry.COL_TASK_ID, task.getId());
                 values.put(TaskContract.TaskEntry.COL_TASK_TITLE, inputText);
                 values.put(TaskContract.TaskEntry.COL_TASK_YEAR, year);
                 values.put(TaskContract.TaskEntry.COL_TASK_MONTH, month);
                 values.put(TaskContract.TaskEntry.COL_TASK_DAY, day);
+                Log.d(TAG, String.valueOf(task.getId()));
                 //add values
-                int rowsUpdated = db.update(TaskContract.TaskEntry.TABLE, values,
-                        TaskContract.TaskEntry.COL_TASK_TITLE
-                                + " = ?", new String[]{oldTaskName});
+                db.update(TaskContract.TaskEntry.TABLE, values,
+                        TaskContract.TaskEntry.COL_TASK_ID
+                                + " = ?", new String[]{String.valueOf(task.getId())});
                 db.close();
                 updateUI();
             }

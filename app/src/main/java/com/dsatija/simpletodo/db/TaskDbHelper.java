@@ -23,7 +23,7 @@ public class TaskDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE " + TaskContract.TaskEntry.TABLE + " ( " +
-                TaskContract.TaskEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                TaskContract.TaskEntry.COL_TASK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 TaskContract.TaskEntry.COL_TASK_TITLE + " TEXT NOT NULL," +
                 TaskContract.TaskEntry.COL_TASK_STATUS + " INTEGER," +
                 TaskContract.TaskEntry.COL_TASK_YEAR + " INTEGER," +
@@ -58,14 +58,15 @@ public class TaskDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
+        values.put(TaskContract.TaskEntry.COL_TASK_ID,changedTask.getId());
         values.put(TaskContract.TaskEntry.COL_TASK_TITLE , changedTask.taskName);
         values.put(TaskContract.TaskEntry.COL_TASK_STATUS, changedTask.getStatus());
         values.put(TaskContract.TaskEntry.COL_TASK_YEAR , changedTask.year);
         values.put(TaskContract.TaskEntry.COL_TASK_MONTH, changedTask.month);
         values.put(TaskContract.TaskEntry.COL_TASK_DAY , changedTask.day);
 
-        db.update(TaskContract.TaskEntry.TABLE, values, TaskContract.TaskEntry.COL_TASK_TITLE +
-                " = ?", new String[]{String.valueOf(changedTask.taskName)});
+        db.update(TaskContract.TaskEntry.TABLE, values, TaskContract.TaskEntry.COL_TASK_ID +
+                " = ?", new String[]{String.valueOf(changedTask.getId())});
 
         db.close();
     }
