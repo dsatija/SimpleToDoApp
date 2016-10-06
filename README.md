@@ -20,8 +20,11 @@ The following **suggested** functionality is completed:
  - Improve style of the todo items in the list using a **custom adapter**:
     Created List view with custom layout which consist of **Text view and Check    box**.
  - Code added for persisting checkbox value in sqlite.
- - Added support for completion due dates for todo items (and display within listview item).
- -Use a DialogFragment instead of new Activity for editing items
+ - Added support for **completion due dates** for todo items (and display within listview item).
+ - Use a **DialogFragment** instead of new Activity for editing items
+ - Added support for **selecting the priority** of each todo item (and display in listview item)
+ - Tweaked the style **improving the UI / UX**, playing with colors or backgrounds
+ - Anything else that you can get done to improve the app functionality or user experience:-enabled **fast scrolling** and added   checkbox.
 
 ## Video Walkthrough 
 
