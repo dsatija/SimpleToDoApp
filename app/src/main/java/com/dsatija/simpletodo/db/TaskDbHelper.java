@@ -1,5 +1,4 @@
 package com.dsatija.simpletodo.db;
-
 /**
  * Created by disha_000 on 9/19/2016.
  */
@@ -12,13 +11,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.dsatija.simpletodo.Task;
 
 public class TaskDbHelper extends SQLiteOpenHelper {
-
     public TaskDbHelper(Context context) {
         super(context, TaskContract.DB_NAME, null, TaskContract.DB_VERSION);
     }
-
-
-
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -28,9 +23,8 @@ public class TaskDbHelper extends SQLiteOpenHelper {
                 TaskContract.TaskEntry.COL_TASK_STATUS + " INTEGER," +
                 TaskContract.TaskEntry.COL_TASK_YEAR + " INTEGER," +
                 TaskContract.TaskEntry.COL_TASK_MONTH + " INTEGER," +
-                TaskContract.TaskEntry.COL_TASK_DAY + " INTEGER" +
-                ")";
-
+                TaskContract.TaskEntry.COL_TASK_DAY + " INTEGER," +
+                TaskContract.TaskEntry.COL_TASK_PRIORITY + " TEXT" + ")";
         db.execSQL(createTable);
     }
 
@@ -57,17 +51,15 @@ public class TaskDbHelper extends SQLiteOpenHelper {
     public void updateTask(Task changedTask) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-
-        values.put(TaskContract.TaskEntry.COL_TASK_ID,changedTask.getId());
-        values.put(TaskContract.TaskEntry.COL_TASK_TITLE , changedTask.taskName);
+        values.put(TaskContract.TaskEntry.COL_TASK_ID, changedTask.getId());
+        values.put(TaskContract.TaskEntry.COL_TASK_TITLE, changedTask.taskName);
         values.put(TaskContract.TaskEntry.COL_TASK_STATUS, changedTask.getStatus());
-        values.put(TaskContract.TaskEntry.COL_TASK_YEAR , changedTask.year);
+        values.put(TaskContract.TaskEntry.COL_TASK_YEAR, changedTask.year);
         values.put(TaskContract.TaskEntry.COL_TASK_MONTH, changedTask.month);
-        values.put(TaskContract.TaskEntry.COL_TASK_DAY , changedTask.day);
-
+        values.put(TaskContract.TaskEntry.COL_TASK_DAY, changedTask.day);
+        values.put(TaskContract.TaskEntry.COL_TASK_PRIORITY, changedTask.getPriority());
         db.update(TaskContract.TaskEntry.TABLE, values, TaskContract.TaskEntry.COL_TASK_ID +
                 " = ?", new String[]{String.valueOf(changedTask.getId())});
-
         db.close();
     }
 }

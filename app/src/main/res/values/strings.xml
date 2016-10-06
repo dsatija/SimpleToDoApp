@@ -1,9 +1,17 @@
 <resources>
     <string name="app_name">SimpleToDo</string>
-    <string name="AddItem">Enter a new item</string>
+    <string name="AddItem">Enter a new task</string>
     <string name="EditItem">Task:</string>
     <string name="save">SAVE</string>
     <string name="checkbox">CheckBox</string>
     <string name="DueDate">Due Date:</string>
     <string name="task_name">Task Name:</string>
+    <string name="priority">Priority</string>
+    <string name="Priority">Priority:</string>
+    <string name="High">High</string>
+    <string name="Medium">Medium</string>
+    <string name="Low">Low</string>
+    <string name="task">Task:</string>
+    <string name="hint5">hint5</string>
+    <string name="add_task">add_task</string>
 </resources>

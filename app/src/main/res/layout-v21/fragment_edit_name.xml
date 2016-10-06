@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="bottom"
+    android:paddingTop="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:layout_weight="3"
+     >
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/task"
+        android:id="@+id/textView"
+     />
+    <EditText
+        android:layout_width="237dp"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/etEdit"
+        android:imeOptions="actionDone"
+     />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Priority"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/textView3" />
+
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/rgOptions">
+        <RadioButton android:id="@+id/rb1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/High"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/rb2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Medium"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/rb3"
+            android:layout_width="84dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/Low"
+            android:onClick="onRadioButtonClicked"/>
+    </RadioGroup>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/DueDate"
+        android:id="@+id/tvDueDate"/>
+    <DatePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editdpDueDate"
+        android:datePickerMode="spinner"
+        android:calendarViewShown="false"
+         />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        android:id="@+id/btnTaskSave"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout>
